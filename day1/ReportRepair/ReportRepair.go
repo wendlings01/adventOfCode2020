@@ -32,6 +32,10 @@ func find2020(array *[]int) int {
 
 // some assumptions are made about the reliability of input, could be more robust
 // does data need to be a pointer? maybe? I don't know how I feel about the data duplication, but it might be performant enough
+// if this is reused, consider:
+//		abstracting numbersSoFar out of the parameters and pass it to a helper function that recurses
+//		simplify the base case(additionsNeeded == 1) by replacing numbersSoFar with currentSum and currentProduct parameters
+//		maybe do the math before the loop and after "error" conditions. this may not play nice with the end of the slice though
 func addToFind2020(additionsNeeded int, numbersSoFar []int, data *[]int) int {
 	if additionsNeeded < 1 {
 		return -1
@@ -79,7 +83,6 @@ func main() {
 
 	// result := find2020(&data)
 
-	// probably should not force the user to input a 0 length array, but I don't care right now
 	result := addToFind2020(3, make([]int, 0), &data)
 
 	fmt.Println(result)
