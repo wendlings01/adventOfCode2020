@@ -16,6 +16,8 @@ func check(e error) {
 	}
 }
 
+// Day 1: min and max are the min and max number of times character can occur in password
+// Day 2: min and max are the 1-indexed positions that character must exist in one of
 type password struct {
 	character string
 	min       int
@@ -26,6 +28,15 @@ type password struct {
 func (p *password) verify() bool {
 	count := strings.Count(p.password, p.character)
 	return count <= p.max && count >= p.min
+}
+
+func (p *password) verifyDay2() bool {
+	adjustedMin := p.min - 1
+	adjustedMax := p.max - 1
+	firstPositionValid := adjustedMin < len(p.password)
+	secondPositionValid := adjustedMax < len(p.password)
+
+	return (firstPositionValid && p.password[adjustedMin] == p.character[0]) != (secondPositionValid && p.password[adjustedMax] == p.character[0])
 }
 
 func main() {
@@ -58,7 +69,8 @@ func main() {
 	}
 
 	for _, p := range data {
-		if p.verify() {
+		if p.verifyDay2() {
+			fmt.Println(p)
 			count++
 		}
 	}
