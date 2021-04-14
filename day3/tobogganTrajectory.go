@@ -23,6 +23,11 @@ func replaceAtIndex(in string, r rune, i int) string {
 	return string(out)
 }
 
+type TobogganTrajectory struct {
+	dx int
+	dy int
+}
+
 func main() {
 	f, err := os.Open("./input.txt")
 	check(err)
@@ -62,7 +67,11 @@ func main() {
 				treeChan <- 1
 			}
 			// fmt.Println(slopeLines[slopeAndChannelIndex])
-			channels[slopeAndChannelIndex+dy] <- startPos + dx
+			if slopeAndChannelIndex+dy < len(channels) {
+				channels[slopeAndChannelIndex+dy] <- startPos + dx
+			} else {
+				channels[len(channels)-1] <- 1
+			}
 		}
 	}
 
@@ -81,14 +90,32 @@ func main() {
 	finalChannel := make(chan int)
 	channels = append(channels, finalChannel)
 
-	go countTrees()
+	tobogganTrajectories := []TobogganTrajectory{
+		{1, 1},
+		{3, 1},
+		{5, 1},
+		{7, 1},
+		{1, 2},
+	}
 
-	channels[0] <- 0
+	product := 1
+	for _, traj := range tobogganTrajectories {
+		go countTrees()
 
-	<-finalChannel
-	// send signal and MAKE SURE it was done
-	stopCounting <- 1
-	<-stopCounting
+		dx = traj.dx
+		dy = traj.dy
+		channels[0] <- 0
 
-	fmt.Println(treesHit)
+		<-finalChannel
+		// send signal and MAKE SURE it was done
+		stopCounting <- 1
+		<-stopCounting
+
+		fmt.Printf("For trajectory %v, hit %d trees\n", traj, treesHit)
+		product *= treesHit
+		treesHit = 0
+	}
+
+	fmt.Println(product)
+
 }
